@@ -80,6 +80,29 @@
         }
       ]
     },
+    "configurationDefaults": {
+      "[markdown]": {
+        "editor.fontFamily": "'SF Mono', Menlo, Monaco, Consolas, 'DejaVu Sans Mono', 'Courier New', monospace"
+      },
+      "[mdx]": {
+        "editor.fontFamily": "'SF Mono', Menlo, Monaco, Consolas, 'DejaVu Sans Mono', 'Courier New', monospace"
+      },
+      "[skill]": {
+        "editor.fontFamily": "'SF Mono', Menlo, Monaco, Consolas, 'DejaVu Sans Mono', 'Courier New', monospace"
+      },
+      "[markdoc]": {
+        "editor.fontFamily": "'SF Mono', Menlo, Monaco, Consolas, 'DejaVu Sans Mono', 'Courier New', monospace"
+      },
+      "[mdc]": {
+        "editor.fontFamily": "'SF Mono', Menlo, Monaco, Consolas, 'DejaVu Sans Mono', 'Courier New', monospace"
+      },
+      "[juliamarkdown]": {
+        "editor.fontFamily": "'SF Mono', Menlo, Monaco, Consolas, 'DejaVu Sans Mono', 'Courier New', monospace"
+      },
+      "[rmarkdown]": {
+        "editor.fontFamily": "'SF Mono', Menlo, Monaco, Consolas, 'DejaVu Sans Mono', 'Courier New', monospace"
+      }
+    },
     "configuration": {
       "title": "Markdown Inline Editor",
       "properties": {

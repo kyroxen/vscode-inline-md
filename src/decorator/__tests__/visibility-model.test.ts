@@ -160,6 +160,32 @@ describe('table decoration rendering', () => {
     expect(result.has('tablePipe')).toBe(false);
   });
 
+  it('keeps header rule/background when cursor is off the table and drops them on whole-block reveal', () => {
+    const text = '| A |\n| - |\nother';
+    const decs = [
+      { startPos: 0, endPos: 5, type: 'tableHeaderRule' as const },
+      { startPos: 0, endPos: 5, type: 'tableHeaderBackground' as const },
+    ] satisfies DecorationRange[];
+    const tableScope: ScopeEntry = {
+      startPos: 0,
+      endPos: 11,
+      range: new Range(new Position(0, 0), new Position(1, 5)) as any,
+      kind: 'table',
+    };
+    const filter = (line: number) =>
+      filterDecorationsForEditor(
+        makeEditor(text, line, 0) as any,
+        decs,
+        [tableScope],
+        text,
+        (s, e, t) => simpleRangeFactory(s, e, t),
+      );
+    expect(filter(2).get('tableHeaderRule')).toHaveLength(1);
+    expect(filter(2).get('tableHeaderBackground')).toHaveLength(1);
+    expect(filter(0).has('tableHeaderRule')).toBe(false);
+    expect(filter(0).has('tableHeaderBackground')).toBe(false);
+  });
+
   it('renders tableCell with cellStyle properties', () => {
     const text = '| **bold** |\nother';
     const decs = [

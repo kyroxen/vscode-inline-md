@@ -79,6 +79,57 @@ describe('MarkdownParser - Tables', () => {
       });
     });
 
+    it('uses NBSP (not collapsible spaces) for separator segments so the rule keeps its width', () => {
+      const md = '| A | B |\n|---|---|\n| 1 | 2 |';
+      const result = parser.extractDecorations(md);
+      const segments = [
+        ...byType(result, 'tableSeparatorDash'),
+        ...byType(result, 'tableSeparatorPipe'),
+      ];
+      expect(segments.length).toBeGreaterThan(0);
+      segments.forEach((d) => {
+        expect(d.replacement).toMatch(/^\u00A0+$/);
+      });
+    });
+
+    it('adds one header background spanning only the header line', () => {
+      const md = '| A | B |\n|---|---|\n| 1 | 2 |';
+      const bands = byType(parser.extractDecorations(md), 'tableHeaderBackground');
+      expect(bands).toHaveLength(1);
+      expect(bands[0].startPos).toBe(0);
+      expect(bands[0].endPos).toBe(md.indexOf('\n'));
+    });
+
+    it('outlines the table with top/bottom borders on its first and last lines', () => {
+      const md = '| A | B |\n|---|---|\n| 1 | 2 |';
+      const result = parser.extractDecorations(md);
+      const top = byType(result, 'tableTopBorder');
+      const bottom = byType(result, 'tableBottomBorder');
+      const lastLineStart = md.lastIndexOf('\n') + 1;
+      expect(top).toHaveLength(1);
+      expect(top[0].startPos).toBe(0);
+      expect(top[0].endPos).toBe(md.indexOf('\n'));
+      expect(bottom).toHaveLength(1);
+      expect(bottom[0].startPos).toBe(lastLineStart);
+      expect(bottom[0].endPos).toBe(md.length);
+    });
+
+    it('bottom-borders the separator line when a table has no body rows', () => {
+      const md = '| A | B |\n|---|---|';
+      const bottom = byType(parser.extractDecorations(md), 'tableBottomBorder');
+      expect(bottom).toHaveLength(1);
+      expect(bottom[0].startPos).toBe(md.indexOf('\n') + 1);
+    });
+
+    it('adds one header rule on the separator line (drawn along its top edge)', () => {
+      const md = '| A | B |\n|---|---|\n| 1 | 2 |';
+      const rules = byType(parser.extractDecorations(md), 'tableHeaderRule');
+      const sepStart = md.indexOf('\n') + 1;
+      expect(rules).toHaveLength(1);
+      expect(rules[0].startPos).toBe(sepStart);
+      expect(rules[0].endPos).toBe(md.indexOf('\n', sepStart));
+    });
+
     it('creates one tableBackground decoration spanning the whole table', () => {
       const md = '| A | B |\n|---|---|\n| 1 | 2 |';
       const result = parser.extractDecorations(md);

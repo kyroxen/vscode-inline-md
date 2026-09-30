@@ -234,6 +234,16 @@ export function filterDecorationsForEditor(
       continue;
     }
 
+    // Header rule/background are plain whole-line ranges; drop them when the table is revealed raw.
+    if (decoration.type === 'tableHeaderRule' || decoration.type === 'tableHeaderBackground') {
+      if (!rangeIntersectsAny(range, rawTableRanges)) {
+        const ranges = filtered.get(decoration.type) || [];
+        ranges.push(range);
+        filtered.set(decoration.type, ranges);
+      }
+      continue;
+    }
+
     // Table decorations: whole-block reveal when cursor is inside the table
     if (tableTypes.has(decoration.type)) {
       if (rangeIntersectsAny(range, rawTableRanges)) {
@@ -255,7 +265,10 @@ export function filterDecorationsForEditor(
             beforeOpts.width = `${ch}ch`;
           }
           const editorFont = workspace
-            .getConfiguration('editor', editor.document.uri)
+            .getConfiguration('editor', {
+              uri: editor.document.uri,
+              languageId: editor.document.languageId,
+            })
             .get<string>('fontFamily');
           if (editorFont) {
             beforeOpts.fontFamily = editorFont;

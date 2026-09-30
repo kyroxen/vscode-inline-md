@@ -558,6 +558,9 @@ export function CheckboxCheckedDecorationType(color?: string | ThemeColor) {
   });
 }
 
+/** Theme color shared by every table outline edge and the header rule. */
+const TABLE_BORDER_COLOR_ID = 'editorLineNumber.foreground';
+
 /**
  * Creates a decoration type for the whole table region.
  *
@@ -571,6 +574,72 @@ export function TableDecorationType() {
   return window.createTextEditorDecorationType({
     backgroundColor: new ThemeColor('textCodeBlock.background'),
     isWholeLine: true,
+    // Left/right edges of the table outline on every line; the top and bottom
+    // edges come from TableTopBorder/TableBottomBorder on the first/last lines.
+    borderStyle: 'solid',
+    borderWidth: '0 1px 0 1px',
+    borderColor: new ThemeColor(TABLE_BORDER_COLOR_ID),
+  });
+}
+
+/**
+ * Creates a decoration type for the top edge of the table outline
+ * (applied to the first table line).
+ */
+export function TableTopBorderDecorationType() {
+  return window.createTextEditorDecorationType({
+    isWholeLine: true,
+    borderStyle: 'solid',
+    borderWidth: '1px 0 0 0',
+    borderColor: new ThemeColor(TABLE_BORDER_COLOR_ID),
+  });
+}
+
+/**
+ * Creates a decoration type for the bottom edge of the table outline
+ * (applied to the last table line).
+ */
+export function TableBottomBorderDecorationType() {
+  return window.createTextEditorDecorationType({
+    isWholeLine: true,
+    borderStyle: 'solid',
+    borderWidth: '0 0 1px 0',
+    borderColor: new ThemeColor(TABLE_BORDER_COLOR_ID),
+  });
+}
+
+/**
+ * Creates a decoration type for the table header row background.
+ *
+ * A whole-line band in a low-alpha neutral gray. Being translucent it layers
+ * over the table background in any theme (a light tint on dark themes, a
+ * slight shade on light ones) instead of depending on a theme color that some
+ * themes define as opaque or dark.
+ *
+ * @returns {vscode.TextEditorDecorationType} A decoration type for the header band
+ */
+export function TableHeaderBackgroundDecorationType() {
+  return window.createTextEditorDecorationType({
+    backgroundColor: 'rgba(128, 128, 128, 0.12)',
+    isWholeLine: true,
+  });
+}
+
+/**
+ * Creates a decoration type for the rule under the table header row.
+ *
+ * Applied to the separator row: a whole-line top border spans the full table
+ * width and sits directly under the header text; the (otherwise blank)
+ * separator line then acts as spacing between the rule and the first body row.
+ *
+ * @returns {vscode.TextEditorDecorationType} A decoration type for the header rule
+ */
+export function TableHeaderRuleDecorationType() {
+  return window.createTextEditorDecorationType({
+    isWholeLine: true,
+    borderStyle: 'solid',
+    borderWidth: '1px 0 0 0',
+    borderColor: new ThemeColor(TABLE_BORDER_COLOR_ID),
   });
 }
 
@@ -596,9 +665,9 @@ export function TablePipeDecorationType() {
 /**
  * Creates a decoration type for table separator row pipe characters.
  *
- * Hides the original pipe and renders a blank space with the same thin
- * bottom-border line as {@link TableSeparatorDashDecorationType}, so the
- * rule reads as one continuous line across pipe crossings.
+ * Hides the original pipe and renders a blank (NBSP) gap matching
+ * {@link TableSeparatorDashDecorationType}; the visible rule is drawn by
+ * {@link TableHeaderRuleDecorationType}.
  *
  * @returns {vscode.TextEditorDecorationType} A decoration type for separator pipes
  */
@@ -608,7 +677,6 @@ export function TableSeparatorPipeDecorationType() {
     before: {
       contentText: '',
       color: new ThemeColor('editorLineNumber.foreground'),
-      textDecoration: 'none; border-bottom: 1px solid var(--vscode-editorIndentGuide-background);',
     },
   });
 }
@@ -616,9 +684,9 @@ export function TableSeparatorPipeDecorationType() {
 /**
  * Creates a decoration type for table separator row dash segments.
  *
- * Hides the original `---` ASCII dashes and renders a blank, equal-width span
- * with a thin bottom-border line instead — a subtle rule under the header row
- * rather than literal hyphen characters.
+ * Hides the original `---` ASCII dashes and renders a blank, equal-width NBSP
+ * span instead of literal hyphen characters. The visible rule under the header
+ * is drawn by {@link TableHeaderRuleDecorationType}.
  *
  * @returns {vscode.TextEditorDecorationType} A decoration type for separator dashes
  */
@@ -628,7 +696,6 @@ export function TableSeparatorDashDecorationType() {
     before: {
       contentText: '',
       color: new ThemeColor('editorLineNumber.foreground'),
-      textDecoration: 'none; border-bottom: 1px solid var(--vscode-editorIndentGuide-background);',
     },
   });
 }

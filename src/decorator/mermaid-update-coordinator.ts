@@ -90,7 +90,9 @@ export class MermaidUpdateCoordinator {
       window.activeColorTheme.kind === ColorThemeKind.HighContrast
       ? 'dark'
       : 'default';
-    const fontFamily = workspace.getConfiguration('editor').get<string>('fontFamily');
+    const fontFamily = workspace
+      .getConfiguration('editor', { uri: editor.document.uri, languageId: editor.document.languageId })
+      .get<string>('fontFamily');
     const maxWidth = estimateEditorContentWidthPx(editor);
     const maxWidthBucket = bucketWidthForCache(maxWidth);
 

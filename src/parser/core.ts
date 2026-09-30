@@ -1538,6 +1538,24 @@ export class MarkdownParser {
       type: "tableBackground",
     });
 
+    // Outline: `tableBackground` draws the side borders on every line; the top
+    // and bottom edges are whole-line borders on the first and last table lines.
+    const [firstLineStart, firstLineEnd] = getLineRangeHelper(text, tableStart);
+    decorations.push({
+      startPos: firstLineStart,
+      endPos: trimLineEndHelper(text, firstLineStart, firstLineEnd),
+      type: "tableTopBorder",
+    });
+    const [lastLineStart, lastLineEnd] = getLineRangeHelper(
+      text,
+      Math.max(tableStart, tableEnd - 1),
+    );
+    decorations.push({
+      startPos: lastLineStart,
+      endPos: trimLineEndHelper(text, lastLineStart, lastLineEnd),
+      type: "tableBottomBorder",
+    });
+
     for (let rowIdx = 0; rowIdx < node.children.length; rowIdx++) {
       const row = node.children[rowIdx];
       if (
@@ -1557,6 +1575,15 @@ export class MarkdownParser {
         lineStart,
         trimmedLineEnd,
       );
+
+      if (rowIdx === 0) {
+        // Subtle band behind the header line, layered over the table background.
+        decorations.push({
+          startPos: lineStart,
+          endPos: trimmedLineEnd,
+          type: "tableHeaderBackground",
+        });
+      }
 
       const nativeTrailBeforePipe = new Map<number, string>();
 
@@ -1771,6 +1798,14 @@ export class MarkdownParser {
         }
 
         const trimmedSepEnd = trimLineEndHelper(text, sepLineStart, sepLineEnd);
+        // Full-width rule on the separator row's top edge: it sits directly under
+        // the header text, the blank separator line becomes spacing before the
+        // body, and a whole-line border spans the table regardless of column widths.
+        decorations.push({
+          startPos: sepLineStart,
+          endPos: trimmedSepEnd,
+          type: "tableHeaderRule",
+        });
         const rawSepPipes = findPipePositionsHelper(text, sepLineStart, trimmedSepEnd);
         const { positions: sepPipes, isVirtual: sepIsVirtual } =
           normalizePipePositionsHelper(
@@ -1786,7 +1821,8 @@ export class MarkdownParser {
               startPos: sepPipes[pIdx],
               endPos: sepPipes[pIdx] + 1,
               type: "tableSeparatorPipe",
-              replacement: " ",
+              // NBSP: ordinary spaces collapse to ~zero width in `::before` content.
+              replacement: "\u00A0",
             });
           }
         }
@@ -1801,7 +1837,7 @@ export class MarkdownParser {
             startPos: segStart,
             endPos: segEnd,
             type: "tableSeparatorDash",
-            replacement: " ".repeat(colWidth + 2),
+            replacement: "\u00A0".repeat(colWidth + 2),
           });
         }
       }

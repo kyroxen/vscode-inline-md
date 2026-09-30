@@ -32,6 +32,10 @@ import {
   FrontmatterDelimiterDecorationType,
   EmojiDecorationType,
   TableDecorationType,
+  TableHeaderRuleDecorationType,
+  TableTopBorderDecorationType,
+  TableBottomBorderDecorationType,
+  TableHeaderBackgroundDecorationType,
   TablePipeDecorationType,
   TableSeparatorPipeDecorationType,
   TableSeparatorDashDecorationType,
@@ -90,6 +94,10 @@ export class DecorationTypeRegistry {
   private frontmatterDelimiterDecorationType!: TextEditorDecorationType;
   private emojiDecorationType!: TextEditorDecorationType;
   private tableDecorationType!: TextEditorDecorationType;
+  private tableHeaderRuleDecorationType!: TextEditorDecorationType;
+  private tableTopBorderDecorationType!: TextEditorDecorationType;
+  private tableBottomBorderDecorationType!: TextEditorDecorationType;
+  private tableHeaderBackgroundDecorationType!: TextEditorDecorationType;
   private tablePipeDecorationType!: TextEditorDecorationType;
   private tableSeparatorPipeDecorationType!: TextEditorDecorationType;
   private tableSeparatorDashDecorationType!: TextEditorDecorationType;
@@ -135,6 +143,10 @@ export class DecorationTypeRegistry {
     this.frontmatterDelimiterDecorationType = FrontmatterDelimiterDecorationType(this.options.getFrontmatterDelimiterOpacity());
     this.emojiDecorationType = EmojiDecorationType();
     this.tableDecorationType = TableDecorationType();
+    this.tableHeaderRuleDecorationType = TableHeaderRuleDecorationType();
+    this.tableTopBorderDecorationType = TableTopBorderDecorationType();
+    this.tableBottomBorderDecorationType = TableBottomBorderDecorationType();
+    this.tableHeaderBackgroundDecorationType = TableHeaderBackgroundDecorationType();
     this.tablePipeDecorationType = TablePipeDecorationType();
     this.tableSeparatorPipeDecorationType = TableSeparatorPipeDecorationType();
     this.tableSeparatorDashDecorationType = TableSeparatorDashDecorationType();
@@ -173,6 +185,10 @@ export class DecorationTypeRegistry {
       ['frontmatterDelimiter', this.frontmatterDelimiterDecorationType],
       ['emoji', this.emojiDecorationType],
       ['tableBackground', this.tableDecorationType],
+      ['tableHeaderBackground', this.tableHeaderBackgroundDecorationType],
+      ['tableHeaderRule', this.tableHeaderRuleDecorationType],
+      ['tableTopBorder', this.tableTopBorderDecorationType],
+      ['tableBottomBorder', this.tableBottomBorderDecorationType],
       ['tablePipe', this.tablePipeDecorationType],
       ['tableSeparatorPipe', this.tableSeparatorPipeDecorationType],
       ['tableSeparatorDash', this.tableSeparatorDashDecorationType],
