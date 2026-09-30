@@ -1,0 +1,103 @@
+import * as vscode from 'vscode';
+import { config } from '../config';
+import { Decorator } from '../decorator';
+import { LinkClickHandler } from '../link-click-handler';
+
+const MERMAID_VIEWPORT_REFRESH_MS = 150;
+let mermaidViewportRefreshTimer: ReturnType<typeof setTimeout> | undefined;
+
+function scheduleMermaidViewportRefresh(decorator: Decorator): void {
+  if (mermaidViewportRefreshTimer) {
+    clearTimeout(mermaidViewportRefreshTimer);
+  }
+  mermaidViewportRefreshTimer = setTimeout(() => {
+    mermaidViewportRefreshTimer = undefined;
+    decorator.clearMermaidDecorationCache();
+  }, MERMAID_VIEWPORT_REFRESH_MS);
+}
+
+export function registerEventHandlers(
+  decorator: Decorator,
+  linkClickHandler: LinkClickHandler
+): vscode.Disposable[] {
+  return [
+    vscode.window.onDidChangeActiveTextEditor((editor) => {
+      decorator.setActiveEditor(editor);
+    }),
+    vscode.window.onDidChangeTextEditorSelection((event) => {
+      decorator.updateDecorationsForSelection(event.kind);
+    }),
+    vscode.workspace.onDidChangeTextDocument((event) => {
+      if (event.document === vscode.window.activeTextEditor?.document) {
+        decorator.updateDecorationsFromChange(event);
+      }
+    }),
+    vscode.workspace.onDidRenameFiles((event) => {
+      for (const { oldUri, newUri } of event.files) {
+        decorator.renameFile(oldUri.toString(), newUri.toString());
+      }
+    }),
+    vscode.workspace.onDidChangeConfiguration((event) => {
+      if (event.affectsConfiguration('markdownInlineEditor.defaultBehaviors.diffView.applyDecorations')) {
+        const diffViewApplyDecorations = config.diffView.applyDecorations();
+        decorator.updateDiffViewDecorationSetting(!diffViewApplyDecorations);
+        decorator.refreshDecorations();
+      }
+
+      if (event.affectsConfiguration('markdownInlineEditor.decorations.ghostFaintOpacity')) {
+        decorator.recreateGhostFaintDecorationType();
+      }
+
+      if (event.affectsConfiguration('markdownInlineEditor.decorations.ghostLinks.collapse')) {
+        decorator.updateDecorationsForSelection();
+      }
+
+      if (event.affectsConfiguration('markdownInlineEditor.decorations.frontmatterDelimiterOpacity')) {
+        decorator.recreateFrontmatterDelimiterDecorationType();
+      }
+
+      if (event.affectsConfiguration('markdownInlineEditor.decorations.codeBlockLanguageOpacity')) {
+        decorator.recreateCodeBlockLanguageDecorationType();
+      }
+
+      if (event.affectsConfiguration('markdownInlineEditor.links.singleClickOpen')) {
+        linkClickHandler.setEnabled(config.links.singleClickOpen());
+      }
+
+      if (event.affectsConfiguration('markdownInlineEditor.links.showEmoji')) {
+        decorator.recreateLinkDecorationType();
+      }
+
+      if (event.affectsConfiguration('markdownInlineEditor.tables.cjkWidthRatio')) {
+        decorator.clearCache();
+        decorator.updateDecorationsForSelection();
+      }
+
+      if (event.affectsConfiguration('markdownInlineEditor.colors')) {
+        decorator.recreateColorDependentTypes();
+      }
+
+      if (event.affectsConfiguration('editor.fontSize') || event.affectsConfiguration('editor.lineHeight')) {
+        decorator.clearMathDecorationCache();
+      }
+
+      if (
+        event.affectsConfiguration('markdownInlineEditor.mermaid.maxWidthColumns') ||
+        event.affectsConfiguration('editor.fontSize')
+      ) {
+        decorator.clearMermaidDecorationCache();
+      }
+    }),
+    vscode.window.onDidChangeTextEditorVisibleRanges((event) => {
+      if (event.textEditor === vscode.window.activeTextEditor) {
+        scheduleMermaidViewportRefresh(decorator);
+      }
+    }),
+    vscode.window.onDidChangeWindowState(() => {
+      scheduleMermaidViewportRefresh(decorator);
+    }),
+    vscode.window.onDidChangeActiveColorTheme(() => {
+      decorator.recreateColorDependentTypes();
+    }),
+  ];
+}

@@ -1,0 +1,309 @@
+{
+  "name": "vscode-inline-md",
+  "displayName": "Inline Markdown",
+  "version": "1.24.2",
+  "description": "WYSIWYG inline markdown editor that hides syntax so you can focus on your content.",
+  "license": "MIT",
+  "author": "kyroxen",
+  "publisher": "kyroxen",
+  "private": true,
+  "icon": "assets/icon.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kyroxen/vscode-inline-md.git"
+  },
+  "homepage": "https://github.com/kyroxen/vscode-inline-md",
+  "bugs": {
+    "url": "https://github.com/kyroxen/vscode-inline-md/issues"
+  },
+  "keywords": [
+    "markdown",
+    "wysiwyg",
+    "inline",
+    "editor",
+    "preview",
+    "syntax",
+    "clean"
+  ],
+  "engines": {
+    "node": ">=22.12.0",
+    "vscode": "^1.100.0"
+  },
+  "categories": [
+    "Formatters",
+    "Visualization",
+    "Other"
+  ],
+  "activationEvents": [
+    "onLanguage:markdown",
+    "onLanguage:mdx",
+    "onLanguage:skill",
+    "onLanguage:markdoc",
+    "onLanguage:mdc",
+    "onLanguage:juliamarkdown",
+    "onLanguage:rmarkdown"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "mdInline.toggleDecorations",
+        "title": "Toggle Markdown Decorations",
+        "icon": "$(eye)"
+      }
+    ],
+    "menus": {
+      "editor/title": [
+        {
+          "command": "mdInline.toggleDecorations",
+          "when": "editorLangId == markdown || editorLangId == md || editorLangId == mdx || editorLangId == markdoc || editorLangId == mdc || editorLangId == juliamarkdown || editorLangId == rmarkdown",
+          "group": "navigation"
+        }
+      ]
+    },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "mdInlineRenderer",
+          "title": "Markdown Inline Editor",
+          "icon": "assets/activityBar.svg"
+        }
+      ]
+    },
+    "views": {
+      "mdInlineRenderer": [
+        {
+          "type": "webview",
+          "id": "mdInline.mermaidRenderer",
+          "name": "Mermaid Renderer",
+          "visibility": "hidden"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Markdown Inline Editor",
+      "properties": {
+        "markdownInlineEditor.defaultBehaviors.diffView.applyDecorations": {
+          "type": "boolean",
+          "default": false,
+          "description": "Apply decorators in diff view",
+          "markdownDescription": "Apply markdown decorations in diff views. Disabled by default to show raw syntax for easier review."
+        },
+        "markdownInlineEditor.decorations.ghostFaintOpacity": {
+          "type": "number",
+          "default": 0.3,
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Opacity for ghost faint decorations",
+          "markdownDescription": "Opacity of syntax markers when cursor is on a line (0.0-1.0)."
+        },
+        "markdownInlineEditor.decorations.ghostLinks.collapse": {
+          "type": "boolean",
+          "default": false,
+          "description": "Collapse ghost-state link syntax to zero width",
+          "markdownDescription": "When enabled, link URL syntax on the active line is fully hidden (zero width) instead of shown faintly. Only the link under the cursor expands to raw markdown."
+        },
+        "markdownInlineEditor.decorations.frontmatterDelimiterOpacity": {
+          "type": "number",
+          "default": 0.3,
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Opacity for frontmatter delimiters",
+          "markdownDescription": "Opacity of frontmatter delimiters (---) (0.0-1.0)."
+        },
+        "markdownInlineEditor.decorations.codeBlockLanguageOpacity": {
+          "type": "number",
+          "default": 0.3,
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Opacity for code block language identifiers",
+          "markdownDescription": "Opacity of code block language identifiers (0.0-1.0)."
+        },
+        "markdownInlineEditor.links.showEmoji": {
+          "type": "boolean",
+          "default": false,
+          "description": "Show a chain icon after hyperlink text",
+          "markdownDescription": "Show a chain emoji (🔗) after decorated link text."
+        },
+        "markdownInlineEditor.links.singleClickOpen": {
+          "type": "boolean",
+          "default": false,
+          "description": "Open links and images with single click",
+          "markdownDescription": "Single-click to open links and image links (no Ctrl+Click needed). May interfere with text selection."
+        },
+        "markdownInlineEditor.emojis.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Render emoji shortcodes (e.g., :smile:)",
+          "markdownDescription": "Render emoji shortcodes (e.g., :smile:) inline in Markdown documents."
+        },
+        "markdownInlineEditor.math.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Render LaTeX math inline ($...$ and $$...$$)",
+          "markdownDescription": "Render LaTeX math inline ($...$ and $$...$$). When disabled, math delimiters are shown as plain text."
+        },
+        "markdownInlineEditor.tables.cjkWidthRatio": {
+          "type": "number",
+          "default": 2.25,
+          "minimum": 1,
+          "maximum": 3,
+          "description": "CJK character width ratio for visual table alignment",
+          "markdownDescription": "Display-width ratio used for CJK characters when padding visual GFM table columns. The default `2.25` preserves the previous `2 + 0.25` correction. Set to `2.0` when your editor font renders CJK close to two ASCII columns."
+        },
+        "markdownInlineEditor.mermaid.maxWidthColumns": {
+          "type": "number",
+          "default": 0,
+          "minimum": 0,
+          "maximum": 500,
+          "description": "Maximum Mermaid diagram width in columns",
+          "markdownDescription": "Maximum width for scaling Mermaid diagrams, in monospace columns. `0` (default) estimates width from the visible editor viewport."
+        },
+        "markdownInlineEditor.orderedLists.autoNumber": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show computed ordered list numbers instead of the source marker",
+          "markdownDescription": "When enabled, ordered list markers are hidden and replaced with sequential numbers (for example lazy `1.` lists). When disabled, numbers in the file are shown exactly as written. The document on disk is never changed either way."
+        },
+        "markdownInlineEditor.orderedLists.warnWhenSourceNumberDiffers": {
+          "type": "boolean",
+          "default": true,
+          "description": "Highlight when the source marker number differs from the computed number",
+          "markdownDescription": "When ordered list auto-numbering is on, use the warning color for the displayed marker when the number in the source text does not match the computed number (for example all lines use `1.` but the view shows 1., 2., 3.)."
+        },
+        "markdownInlineEditor.mentions.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable GitHub-style mentions and issue reference styling",
+          "markdownDescription": "Enable detection and inline styling for GitHub-style mentions and references such as @username, @org/team, #123, and @owner/repo#456."
+        },
+        "markdownInlineEditor.mentions.linksEnabled": {
+          "type": "boolean",
+          "description": "Override clickable mention and issue reference links",
+          "markdownDescription": "Override git-remote context auto-detection for clickable mention and issue links. `true` forces links on; `false` forces links off; leave unset to use origin remote auto-detection."
+        },
+        "markdownInlineEditor.debug.logging.enabled": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable Markdown Inline Editor debug logging",
+          "markdownDescription": "Write debug and warning messages to the `Markdown Inline Editor` output channel."
+        },
+        "markdownInlineEditor.debug.performance.enabled": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable performance metric logging",
+          "markdownDescription": "Write parse and decoration timing metrics to the `Markdown Inline Editor` output channel."
+        },
+        "markdownInlineEditor.colors.link": {
+          "type": "string",
+          "description": "Hex color for link text",
+          "format": "color",
+          "markdownDescription": "Hex color for link text. Leave empty to use theme default."
+        },
+        "markdownInlineEditor.colors.listMarker": {
+          "type": "string",
+          "description": "Hex color for list markers",
+          "format": "color",
+          "markdownDescription": "Hex color for list markers (unordered and ordered). Leave empty to use theme default."
+        },
+        "markdownInlineEditor.colors.inlineCode": {
+          "type": "string",
+          "description": "Hex color for inline code",
+          "format": "color",
+          "markdownDescription": "Hex color for inline code. Leave empty to use theme default."
+        },
+        "markdownInlineEditor.colors.inlineCodeBackground": {
+          "type": "string",
+          "description": "Hex color for inline code background",
+          "format": "color",
+          "markdownDescription": "Hex color for inline code background overlay. Leave empty to use theme-aware default."
+        },
+        "markdownInlineEditor.colors.emphasis": {
+          "type": "string",
+          "description": "Hex color for emphasis (bold/italic)",
+          "format": "color",
+          "markdownDescription": "Hex color for emphasis (bold/italic). Leave empty to use theme default."
+        },
+        "markdownInlineEditor.colors.blockquote": {
+          "type": "string",
+          "description": "Hex color for blockquote",
+          "format": "color",
+          "markdownDescription": "Hex color for blockquote markers and/or text. Leave empty to use theme default."
+        },
+        "markdownInlineEditor.colors.image": {
+          "type": "string",
+          "description": "Hex color for image link text",
+          "format": "color",
+          "markdownDescription": "Hex color for image link text/placeholder. Leave empty to use theme default."
+        },
+        "markdownInlineEditor.colors.horizontalRule": {
+          "type": "string",
+          "description": "Hex color for horizontal rule line",
+          "format": "color",
+          "markdownDescription": "Hex color for horizontal rule line. Leave empty to use theme default."
+        },
+        "markdownInlineEditor.colors.checkbox": {
+          "type": "string",
+          "description": "Hex color for checkbox (unchecked and checked)",
+          "format": "color",
+          "markdownDescription": "Hex color for unchecked and checked checkbox symbols. Leave empty to use theme default."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "lint:docs": "node scripts/validate-feature-outline.js",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "test:e2e": "npm run bundle && npm run compile:e2e && vscode-test",
+    "test:report": "vitest run --coverage && echo HTML coverage report: dist/coverage/index.html",
+    "test:crlf": "vitest run src/parser/__tests__/parser-crlf.test.ts src/link-provider/__tests__/link-provider-crlf.test.ts src/decorator/__tests__/decorator-crlf.test.ts src/decorator/__tests__/decorator-cache-crlf.test.ts src/position-mapping/__tests__/position-mapping.test.ts",
+    "clean": "rimraf dist",
+    "copy:mermaid": "node scripts/copy-mermaid.js",
+    "compile": "tsc --project tsconfig.build.json",
+    "bundle": "esbuild src/extension.ts --bundle --platform=node --format=cjs --target=node18 --external:vscode --outfile=dist/extension.js --sourcemap",
+    "bundle:prod": "esbuild src/extension.ts --bundle --platform=node --format=cjs --target=node18 --external:vscode --outfile=dist/extension.js",
+    "package": "vsce package --out dist/extension.vsix",
+    "build": "npm run copy:mermaid && npm run compile && npm run bundle:prod && npm run package",
+    "build:dev": "npm run compile && npm run bundle && npm run package",
+    "validate": "npm run lint:docs && npm test && npm run build",
+    "compile:e2e": "tsc -p tsconfig.e2e.json",
+    "prepublishOnly": "npm run clean && npm run build"
+  },
+  "overrides": {
+    "diff": "^8.0.3",
+    "serialize-javascript": "^7.0.4",
+    "@xmldom/xmldom": "^0.9.12"
+  },
+  "dependencies": {
+    "cheerio": "1.2.0",
+    "katex": "^0.17.0",
+    "mathjax-full": "^3.2.2",
+    "mermaid": "11.16.0",
+    "remark-gfm": "4.0.1",
+    "remark-parse": "11.0.0",
+    "unified": "11.0.5",
+    "unist-util-visit": "5.1.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@tsconfig/node-lts": "^24.0.0",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "^26.1.0",
+    "@types/unist": "^3.0.3",
+    "@types/vscode": "1.100.0",
+    "@vitest/coverage-v8": "^4.1.11",
+    "@vscode/test-cli": "^0.0.15",
+    "@vscode/test-electron": "^3.0.0",
+    "@vscode/vsce": "^3.9.2",
+    "esbuild": "^0.28.1",
+    "eslint": "^10.6.0",
+    "ovsx": "^1.0.2",
+    "rimraf": "^6.1.3",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.62.1",
+    "vitest": "^4.1.11"
+  }
+}

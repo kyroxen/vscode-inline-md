@@ -1,0 +1,63 @@
+# Development files
+.vscode/**
+.vscode-test/**
+src/**
+.gitignore
+.npmignore
+tsconfig.json
+tsconfig.build.json
+tsconfig.vitest.json
+vitest.config.ts
+*.map
+**/*.map
+dist/**/*.map
+*.tsbuildinfo
+
+# Documentation (not needed in extension)
+FEATURES.md
+FEATURES-EXAMPLE.md
+EXTENSION_STRUCTURE_REVIEW.md
+README.md
+LICENSE
+AGENTS.md
+TEST_VALIDATION_REPORT.md
+docs/**
+examples/**
+
+# Build artifacts
+branding/**
+node_modules/**
+coverage/**
+test-report/**
+*.log
+
+# Source maps (exclude from package)
+*.map
+**/*.map
+dist/**/*.map
+extension/dist/**/*.map
+
+# TypeScript declaration files (not needed at runtime)
+dist/**/*.d.ts
+**/*.d.ts
+
+# Test files
+test-*.md
+*.test.ts
+**/__tests__/**
+dist/test-report/**
+dist/test
+dist/coverage
+
+# CI/CD
+.github/**
+
+# Cursor files
+
+# Dev tooling (not needed at runtime)
+Makefile
+eslint.config.mjs
+scripts/**
+.eslintignore
+.vscode-test.mjs
+tsconfig.e2e.json
